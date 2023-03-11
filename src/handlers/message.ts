@@ -84,8 +84,7 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
           }
 
           const data = { ...prevData, ...update } as proto.IWebMessageInfo;
-          await tx.message.delete({
-            select: { pkId: true },
+          await tx.message.update({
             where: {
               sessionId_remoteJid_id: {
                 id: key.id!,
@@ -93,9 +92,6 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
                 sessionId,
               },
             },
-          });
-          await tx.message.create({
-            select: { pkId: true },
             data: {
               ...transformPrisma(data),
               id: data.key.id!,
