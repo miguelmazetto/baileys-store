@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.serializePrisma = exports.transformPrisma = void 0;
-const baileys_1 = require("@adiwajshing/baileys");
+const baileys_1 = require("@whiskeysockets/baileys");
 const long_1 = __importDefault(require("long"));
 /** Transform object props value into Prisma-supported types */
 function transformPrisma(data, removeNullable = true) {

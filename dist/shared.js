@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLogger = exports.usePrisma = exports.setLogger = exports.setPrisma = void 0;
-const baileys_1 = require("@adiwajshing/baileys");
+const baileys_1 = require("@whiskeysockets/baileys");
 const tiny_invariant_1 = __importDefault(require("tiny-invariant"));
 let prisma = null;
 let logger = null;

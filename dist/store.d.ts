@@ -1,4 +1,4 @@
-import type { BaileysEventEmitter, SocketConfig } from '@adiwajshing/baileys';
+import type { BaileysEventEmitter, SocketConfig } from '@whiskeysockets/baileys';
 import type { PrismaClient } from '@prisma/client';
 type initStoreOptions = {
     /** Prisma client instance */

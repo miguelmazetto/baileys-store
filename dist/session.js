@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSession = void 0;
-const baileys_1 = require("@adiwajshing/baileys");
-const baileys_2 = require("@adiwajshing/baileys");
+const baileys_1 = require("@whiskeysockets/baileys");
+const baileys_2 = require("@whiskeysockets/baileys");
 const runtime_1 = require("@prisma/client/runtime");
 const shared_1 = require("./shared");
 const fixId = (id) => id.replace(/\//g, '__').replace(/:/g, '-');

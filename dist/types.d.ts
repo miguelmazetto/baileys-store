@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import type { BaileysEventMap } from '@adiwajshing/baileys';
+import type { BaileysEventMap } from '@whiskeysockets/baileys';
 import type Long from 'long';
 export type BaileysEventHandler<T extends keyof BaileysEventMap> = (args: BaileysEventMap[T]) => void;
 type TransformPrisma<T, TransformObject> = T extends Long ? number : T extends Uint8Array ? Buffer : T extends null ? never : T extends object ? TransformObject extends true ? object : T : T;

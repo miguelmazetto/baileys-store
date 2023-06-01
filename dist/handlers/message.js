@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const baileys_1 = require("@adiwajshing/baileys");
+const baileys_1 = require("@whiskeysockets/baileys");
 const shared_1 = require("../shared");
 const utils_1 = require("../utils");
 const getKeyAuthor = (key) => ((key === null || key === void 0 ? void 0 : key.fromMe) ? 'me' : (key === null || key === void 0 ? void 0 : key.participant) || (key === null || key === void 0 ? void 0 : key.remoteJid)) || '';
