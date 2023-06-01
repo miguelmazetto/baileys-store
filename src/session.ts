@@ -1,6 +1,6 @@
-import type { AuthenticationCreds, SignalDataTypeMap } from '@adiwajshing/baileys';
-import { proto } from '@adiwajshing/baileys';
-import { BufferJSON, initAuthCreds } from '@adiwajshing/baileys';
+import type { AuthenticationCreds, SignalDataTypeMap } from '@whiskeysockets/baileys';
+import { proto } from '@whiskeysockets/baileys';
+import { BufferJSON, initAuthCreds } from '@whiskeysockets/baileys';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { useLogger, usePrisma } from './shared';
 
@@ -59,16 +59,16 @@ export async function useSession(sessionId: string) {
     state: {
       creds,
       keys: {
-        get: async (type: keyof SignalDataTypeMap, ids: string[]) => {
-          const data: { [key: string]: SignalDataTypeMap[typeof type] } = {};
+        get: async <T extends keyof SignalDataTypeMap>(type: T, ids: string[]): Promise<{ [p: string]: SignalDataTypeMap[T] }> => {
+          const data: { [key: string]: SignalDataTypeMap[T] } = {};
           await Promise.all(
-            ids.map(async (id) => {
-              let value = await read(`${type}-${id}`);
-              if (type === 'app-state-sync-key' && value) {
-                value = proto.Message.AppStateSyncKeyData.fromObject(value);
-              }
-              data[id] = value;
-            })
+              ids.map(async (id) => {
+                let value = await read(`${type}-${id}`);
+                if (type === 'app-state-sync-key' && value) {
+                  value = proto.Message.AppStateSyncKeyData.fromObject(value);
+                }
+                data[id] = value as SignalDataTypeMap[T];
+              })
           );
           return data;
         },

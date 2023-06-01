@@ -1,11 +1,11 @@
 {
-  "name": "@ookamiiixd/baileys-store",
-  "version": "1.0.0-beta.1",
+  "name": "@kevineduardo/baileys-store",
+  "version": "1.0.4",
   "description": "Minimal Baileys data storage for your favorite DBMS built with Prisma",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/ookamiiixd/baileys-store.git",
-  "author": "Royhan (https://github.com/ookamiiixd)",
+  "repository": "https://github.com/kevineduardo/baileys-store.git",
+  "author": "Kevin Eduardo (https://github.com/kevineduardo)",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
@@ -14,11 +14,11 @@
     "format": "prettier . --write"
   },
   "devDependencies": {
-    "@adiwajshing/baileys": "github:WhiskeySockets/Baileys",
     "@prisma/client": "^4.7.1",
     "@types/node": "^18.11.10",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
+    "@whiskeysockets/baileys": "^6.1.0",
     "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
     "prettier": "^2.8.0",
@@ -27,6 +27,7 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
+    "@adiwajshing/keyed-db": "^0.2.4",
     "tiny-invariant": "^1.3.1"
   },
   "peerDependencies": {
