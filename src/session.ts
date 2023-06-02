@@ -38,7 +38,7 @@ export async function useSession(sessionId: string) {
       } else {
         logger.error(e, 'An error occured during session read');
       }
-      return null;
+      return undefined;
     }
   };
 
