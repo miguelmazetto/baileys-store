@@ -55,30 +55,37 @@ export default function chatHandler(sessionId: string, event: BaileysEventEmitte
   };
 
   const update: BaileysEventHandler<'chats.update'> = async (updates) => {
-    for (const update of updates) {
+    for (const updateData of updates) {
       try {
-        const data = transformPrisma(update);
-        await prisma.chat.update({
-          select: { pkId: true },
-          data: {
-            ...data,
-            unreadCount:
-              typeof data.unreadCount === 'number'
-                ? data.unreadCount > 0
-                  ? { increment: data.unreadCount }
-                  : { set: data.unreadCount }
-                : undefined,
-          },
-          where: { sessionId_id: { id: update.id!, sessionId } },
+        const data = transformPrisma(updateData);
+        const chatExists = await prisma.chat.findUnique({
+          where: { sessionId_id: { id: data.id!, sessionId } },
         });
+
+        if (chatExists) {
+          await prisma.chat.update({
+            select: { pkId: true },
+            data: {
+              ...data,
+              unreadCount:
+                  typeof data.unreadCount === 'number'
+                      ? data.unreadCount > 0
+                          ? { increment: data.unreadCount }
+                          : { set: data.unreadCount }
+                      : undefined,
+            },
+            where: { sessionId_id: { id: data.id!, sessionId } },
+          });
+        }
       } catch (e) {
         if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
-          return logger.info({ update }, 'Got update for non existent chat');
+          return logger.info({ updateData }, 'Got update for non-existent chat');
         }
-        logger.error(e, 'An error occured during chat update');
+        logger.error(e, 'An error occurred during chat update');
       }
     }
   };
+
 
   const del: BaileysEventHandler<'chats.delete'> = async (ids) => {
     try {

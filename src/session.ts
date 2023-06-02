@@ -59,15 +59,15 @@ export async function useSession(sessionId: string) {
     state: {
       creds,
       keys: {
-        get: async <T extends keyof SignalDataTypeMap>(type: T, ids: string[]): Promise<{ [p: string]: SignalDataTypeMap[T] }> => {
-          const data: { [key: string]: SignalDataTypeMap[T] } = {};
+        get: async <T extends keyof SignalDataTypeMap>(type: T, ids: string[]) => {
+          const data: { [key: string]: SignalDataTypeMap[typeof type] } = {};
           await Promise.all(
               ids.map(async (id) => {
                 let value = await read(`${type}-${id}`);
                 if (type === 'app-state-sync-key' && value) {
                   value = proto.Message.AppStateSyncKeyData.fromObject(value);
                 }
-                data[id] = value as SignalDataTypeMap[T];
+                data[id] = value;
               })
           );
           return data;
