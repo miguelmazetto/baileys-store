@@ -75,6 +75,29 @@ model Contact {
   @@index([sessionId])
 }
 
+model Group {
+  pkId              BigInt   @id @default(autoincrement())
+  sessionId         String
+  id                String
+  announce          Boolean?
+  creation          BigInt?
+  desc              String?
+  descId            String?
+  descOwner         String?
+  ephemeralDuration BigInt?
+  inviteCode        String?
+  owner             String?
+  participants      Json?
+  restrict          Boolean?
+  size              BigInt?
+  subject           String?
+  subjectOwner      String?
+  subjectTime       BigInt?
+
+  @@unique([sessionId, id], map: "unique_id_per_session_id_group")
+  @@index([sessionId])
+}
+
 model Message {
   pkId                            BigInt   @id @default(autoincrement())
   sessionId                       String
@@ -136,4 +159,10 @@ model Session {
 
   @@unique([sessionId, id], map: "unique_id_per_session_id_session")
   @@index([sessionId])
+}
+
+model AccessToken {
+  id        BigInt   @id @default(autoincrement())
+  token     String   @unique
+  createdAt DateTime @default(now())
 }
