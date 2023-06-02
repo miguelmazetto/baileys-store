@@ -62,22 +62,29 @@ export default function contactHandler(sessionId: string, event: BaileysEventEmi
     }
   };
 
-  const update: BaileysEventHandler<'contacts.update'> = async (updates) => {
-    for (const update of updates) {
-      try {
-        await prisma.contact.update({
-          select: { pkId: true },
-          data: transformPrisma(update),
-          where: { sessionId_id: { id: update.id!, sessionId } },
-        });
-      } catch (e) {
-        if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
-          return logger.info({ update }, 'Got update for non existent contact');
+    const update: BaileysEventHandler<'contacts.update'> = async (updates) => {
+        for (const updateData of updates) {
+            try {
+                const data = transformPrisma(updateData);
+                const contactExists = await prisma.contact.findUnique({
+                    where: { sessionId_id: { id: data.id!, sessionId } },
+                });
+
+                if (contactExists) {
+                    await prisma.contact.update({
+                        select: { pkId: true },
+                        data: data,
+                        where: { sessionId_id: { id: data.id!, sessionId } },
+                    });
+                }
+            } catch (e) {
+                if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+                    return logger.info({ updateData }, 'Got update for non existent contact');
+                }
+                logger.error(e, 'An error occured during contact update');
+            }
         }
-        logger.error(e, 'An error occured during contact update');
-      }
-    }
-  };
+    };
 
   const listen = () => {
     if (listening) return;
