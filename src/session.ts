@@ -4,7 +4,7 @@ import { BufferJSON, initAuthCreds } from '@whiskeysockets/baileys';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime';
 import { useLogger, usePrisma } from './shared';
 
-const fixId = (id: string) => id.replace(/\//g, '__').replace(/:/g, '-');
+const fixId = (id: string) => id.replace(/\//g, '__').replace(/:/g, '-').replace(/\./g, '--');
 
 export async function useSession(sessionId: string) {
   const model = usePrisma().session;
@@ -26,17 +26,18 @@ export async function useSession(sessionId: string) {
   };
 
   const read = async (id: string) => {
+    id = fixId(id);
     try {
       const { data } = await model.findUniqueOrThrow({
         select: { data: true },
-        where: { sessionId_id: { id: fixId(id), sessionId } },
+        where: { sessionId_id: { id: id, sessionId } },
       });
       return JSON.parse(data, BufferJSON.reviver);
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
         logger.info({ id }, 'Trying to read non existent session data');
       } else {
-        logger.error(e, 'An error occured during session read');
+        logger.error(e, 'An error occured during session read. ID: ' + id);
       }
       return undefined;
     }
