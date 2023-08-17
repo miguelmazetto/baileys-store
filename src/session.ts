@@ -30,14 +30,14 @@ export async function useSession(sessionId: string) {
     try {
       const { data } = await model.findUniqueOrThrow({
         select: { data: true },
-        where: { sessionId_id: { id: id, sessionId } },
+        where: { sessionId_id: { id, sessionId } },
       });
       return JSON.parse(data, BufferJSON.reviver);
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
         logger.info({ id }, 'Trying to read non existent session data');
       } else {
-        logger.error(e, 'An error occured during session read. ID: ' + id);
+        logger.error(e, 'An error occured during session read. ID: ' + id + ' SessionID: ' + sessionId);
       }
       return undefined;
     }
