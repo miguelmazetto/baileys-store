@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.useSession = void 0;
 const baileys_1 = require("@whiskeysockets/baileys");
 const baileys_2 = require("@whiskeysockets/baileys");
-const runtime_1 = require("@prisma/client/runtime");
+const library_1 = require("@prisma/client/runtime/library");
 const shared_1 = require("./shared");
 const fixId = (id) => id.replace(/\//g, '__').replace(/:/g, '-').replace(/\./g, '--');
 async function useSession(sessionId) {
@@ -34,7 +34,7 @@ async function useSession(sessionId) {
             return JSON.parse(data, baileys_2.BufferJSON.reviver);
         }
         catch (e) {
-            if (e instanceof runtime_1.PrismaClientKnownRequestError && e.code === 'P2025') {
+            if (e instanceof library_1.PrismaClientKnownRequestError && e.code === 'P2025') {
                 logger.info({ id }, 'Trying to read non existent session data');
             }
             else {
