@@ -32,18 +32,18 @@ model Session {
 
 ```bash
 # Using npm
-npm i @kevineduardo/baileys-store
+npm i @miguelmazetto/baileys-store
 
 # Using yarn
-yarn add @kevineduardo/baileys-store
+yarn add @miguelmazetto/baileys-store
 ```
 
 ## Setup
 
 Before you can actually use this library, you have to setup your database first
 
-1. Copy the `.env.example` file from this repository or from the `node_modules` directory (should be located at `node_modules/@kevineduardo/baileys-store/.env.example`). Rename it into `.env` and then update your [connection url](https://www.prisma.io/docs/reference/database-reference/connection-urls) in the `DATABASE_URL` field
-1. Copy the `prisma` directory from this repository or from the `node_modules` directory (should be located at `node_modules/@kevineduardo/baileys-store/prisma/`). Additionaly, you may want to update your `provider` in the `schema.prisma` file if you're not using MySQL database
+1. Copy the `.env.example` file from this repository or from the `node_modules` directory (should be located at `node_modules/@miguelmazetto/baileys-store/.env.example`). Rename it into `.env` and then update your [connection url](https://www.prisma.io/docs/reference/database-reference/connection-urls) in the `DATABASE_URL` field
+1. Copy the `prisma` directory from this repository or from the `node_modules` directory (should be located at `node_modules/@miguelmazetto/baileys-store/prisma/`). Additionaly, you may want to update your `provider` in the `schema.prisma` file if you're not using MySQL database
 1. Run your [migration](https://www.prisma.io/docs/reference/api-reference/command-reference#prisma-migrate)
 
 ## Usage
@@ -52,7 +52,7 @@ Before you can actually use this library, you have to setup your database first
 import pino from 'pino';
 import makeWASocket from '@whiskeysockets/baileys';
 import { PrismaClient } from '@prisma/client';
-import { initStore, Store } from '@kevineduardo/baileys-store';
+import { initStore, Store } from '@miguelmazetto/baileys-store';
 
 const logger = pino();
 const socket = makeWASocket();

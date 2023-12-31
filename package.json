@@ -1,11 +1,11 @@
 {
-  "name": "@kevineduardo/baileys-store",
+  "name": "@miguelmazetto/baileys-store",
   "version": "1.0.12",
   "description": "Minimal Baileys data storage for your favorite DBMS built with Prisma",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "repository": "https://github.com/kevineduardo/baileys-store.git",
-  "author": "Kevin Eduardo (https://github.com/kevineduardo)",
+  "repository": "https://github.com/miguelmazetto/baileys-store.git",
+  "author": "Miguel Mazetto (https://github.com/miguelmazetto)",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
