@@ -11,7 +11,7 @@ function groupHandler(sessionId, event) {
         try {
             await Promise.any(groups
                 .map((g) => (0, utils_1.transformPrisma)(g))
-                .map((data) => prisma.group.upsert({
+                .map((data) => prisma.waGroup.upsert({
                 select: { pkId: true },
                 create: Object.assign(Object.assign({}, data), { sessionId }),
                 update: data,
@@ -25,7 +25,7 @@ function groupHandler(sessionId, event) {
     const update = async (updates) => {
         for (const update of updates) {
             try {
-                await prisma.group.update({
+                await prisma.waGroup.update({
                     select: { pkId: true },
                     data: (0, utils_1.transformPrisma)(update),
                     where: { sessionId_id: { id: update.id, sessionId } },

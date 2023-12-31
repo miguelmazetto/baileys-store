@@ -13,7 +13,7 @@ export default function contactHandler(sessionId: string, event: BaileysEventEmi
     try {
       const contactIds = contacts.map((c) => c.id);
       const deletedOldContactIds = (
-          await prisma.contact.findMany({
+          await prisma.waContact.findMany({
             select: { id: true },
             where: { id: { notIn: contactIds }, sessionId },
           })
@@ -22,7 +22,7 @@ export default function contactHandler(sessionId: string, event: BaileysEventEmi
       const upsertPromises = contacts
           .map((c) => transformPrisma(c))
           .map((data) =>
-              prisma.contact.upsert({
+              prisma.waContact.upsert({
                 select: { pkId: true },
                 create: { ...data, sessionId },
                 update: data,
@@ -32,7 +32,7 @@ export default function contactHandler(sessionId: string, event: BaileysEventEmi
 
       await Promise.any([
         ...upsertPromises,
-        prisma.contact.deleteMany({ where: { id: { in: deletedOldContactIds }, sessionId } }),
+        prisma.waContact.deleteMany({ where: { id: { in: deletedOldContactIds }, sessionId } }),
       ]);
       logger.info(
           { deletedContacts: deletedOldContactIds.length, newContacts: contacts.length },
@@ -49,7 +49,7 @@ export default function contactHandler(sessionId: string, event: BaileysEventEmi
           contacts
               .map((c) => transformPrisma(c))
               .map((data) =>
-                  prisma.contact.upsert({
+                  prisma.waContact.upsert({
                     select: { pkId: true },
                     create: { ...data, sessionId },
                     update: data,
@@ -66,12 +66,12 @@ export default function contactHandler(sessionId: string, event: BaileysEventEmi
         for (const updateData of updates) {
             try {
                 const data = transformPrisma(updateData);
-                const contactExists = await prisma.contact.findUnique({
+                const contactExists = await prisma.waContact.findUnique({
                     where: { sessionId_id: { id: data.id!, sessionId } },
                 });
 
                 if (contactExists) {
-                    await prisma.contact.update({
+                    await prisma.waContact.update({
                         select: { pkId: true },
                         data: data,
                         where: { sessionId_id: { id: data.id!, sessionId } },

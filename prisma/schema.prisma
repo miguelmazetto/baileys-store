@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Chat {
+model waChat {
   pkId                      BigInt   @id @default(autoincrement())
   sessionId                 String
   archived                  Boolean?
@@ -61,7 +61,7 @@ model Chat {
   @@index([sessionId])
 }
 
-model Contact {
+model waContact {
   pkId         BigInt  @id @default(autoincrement())
   sessionId    String
   id           String
@@ -75,7 +75,7 @@ model Contact {
   @@index([sessionId])
 }
 
-model Group {
+model waGroup {
   pkId              BigInt   @id @default(autoincrement())
   sessionId         String
   id                String
@@ -98,7 +98,7 @@ model Group {
   @@index([sessionId])
 }
 
-model Message {
+model waMessage {
   pkId                            BigInt   @id @default(autoincrement())
   sessionId                       String
   remoteJid                       String
@@ -151,7 +151,7 @@ model Message {
   @@index([sessionId])
 }
 
-model Session {
+model waSession {
   pkId      BigInt @id @default(autoincrement())
   sessionId String
   id        String
@@ -161,7 +161,7 @@ model Session {
   @@index([sessionId])
 }
 
-model AccessToken {
+model waAccessToken {
   id        BigInt   @id @default(autoincrement())
   token     String   @unique
   createdAt DateTime @default(now())

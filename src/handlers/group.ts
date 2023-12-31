@@ -15,7 +15,7 @@ export default function groupHandler(sessionId: string, event: BaileysEventEmitt
                 groups
                     .map((g) => transformPrisma(g))
                     .map((data) =>
-                        prisma.group.upsert({
+                        prisma.waGroup.upsert({
                             select: { pkId: true },
                             create: { ...data, sessionId },
                             update: data,
@@ -31,7 +31,7 @@ export default function groupHandler(sessionId: string, event: BaileysEventEmitt
     const update: BaileysEventHandler<'groups.update'> = async (updates) => {
         for (const update of updates) {
             try {
-                await prisma.group.update({
+                await prisma.waGroup.update({
                     select: { pkId: true },
                     data: transformPrisma(update),
                     where: { sessionId_id: { id: update.id!, sessionId } },

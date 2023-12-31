@@ -12,16 +12,16 @@ export default function chatHandler(sessionId: string, event: BaileysEventEmitte
   const set: BaileysEventHandler<'messaging-history.set'> = async ({ chats, isLatest }) => {
     try {
       await prisma.$transaction(async (tx) => {
-        if (isLatest) await tx.chat.deleteMany({ where: { sessionId } });
+        if (isLatest) await tx.waChat.deleteMany({ where: { sessionId } });
 
         const existingIds = (
-          await tx.chat.findMany({
+          await tx.waChat.findMany({
             select: { id: true },
             where: { id: { in: chats.map((c) => c.id) }, sessionId },
           })
         ).map((i) => i.id);
         const chatsAdded = (
-          await tx.chat.createMany({
+          await tx.waChat.createMany({
             data: chats
               .filter((c) => !existingIds.includes(c.id))
               .map((c) => ({ ...transformPrisma(c), sessionId })),
@@ -41,7 +41,7 @@ export default function chatHandler(sessionId: string, event: BaileysEventEmitte
         chats
           .map((c) => transformPrisma(c))
           .map((data) =>
-            prisma.chat.upsert({
+            prisma.waChat.upsert({
               select: { pkId: true },
               create: { ...data, sessionId },
               update: data,
@@ -58,12 +58,12 @@ export default function chatHandler(sessionId: string, event: BaileysEventEmitte
     for (const updateData of updates) {
       try {
         const data = transformPrisma(updateData);
-        const chatExists = await prisma.chat.findUnique({
+        const chatExists = await prisma.waChat.findUnique({
           where: { sessionId_id: { id: data.id!, sessionId } },
         });
 
         if (chatExists) {
-          await prisma.chat.update({
+          await prisma.waChat.update({
             select: { pkId: true },
             data: {
               ...data,
@@ -89,7 +89,7 @@ export default function chatHandler(sessionId: string, event: BaileysEventEmitte
 
   const del: BaileysEventHandler<'chats.delete'> = async (ids) => {
     try {
-      await prisma.chat.deleteMany({
+      await prisma.waChat.deleteMany({
         where: { id: { in: ids } },
       });
     } catch (e) {

@@ -12,8 +12,8 @@ function messageHandler(sessionId, event) {
         try {
             await prisma.$transaction(async (tx) => {
                 if (isLatest)
-                    await tx.message.deleteMany({ where: { sessionId } });
-                await tx.message.createMany({
+                    await tx.waMessage.deleteMany({ where: { sessionId } });
+                await tx.waMessage.createMany({
                     data: messages.map((message) => (Object.assign(Object.assign({}, (0, utils_1.transformPrisma)(message)), { remoteJid: message.key.remoteJid, id: message.key.id, sessionId }))),
                 });
             });
@@ -31,13 +31,13 @@ function messageHandler(sessionId, event) {
                     try {
                         const jid = (0, baileys_1.jidNormalizedUser)(message.key.remoteJid);
                         const data = (0, utils_1.transformPrisma)(message);
-                        await prisma.message.upsert({
+                        await prisma.waMessage.upsert({
                             select: { pkId: true },
                             create: Object.assign(Object.assign({}, data), { remoteJid: jid, id: message.key.id, sessionId }),
                             update: Object.assign({}, data),
                             where: { sessionId_remoteJid_id: { remoteJid: jid, id: message.key.id, sessionId } },
                         });
-                        const chatExists = (await prisma.chat.count({ where: { id: jid, sessionId } })) > 0;
+                        const chatExists = (await prisma.waChat.count({ where: { id: jid, sessionId } })) > 0;
                         if (type === 'notify' && !chatExists) {
                             event.emit('chats.upsert', [
                                 {
@@ -59,14 +59,14 @@ function messageHandler(sessionId, event) {
         for (const { update, key } of updates) {
             try {
                 await prisma.$transaction(async (tx) => {
-                    const prevData = await tx.message.findFirst({
+                    const prevData = await tx.waMessage.findFirst({
                         where: { id: key.id, remoteJid: key.remoteJid, sessionId },
                     });
                     if (!prevData) {
                         return logger.info({ update }, 'Got update for non existent message');
                     }
                     const data = Object.assign(Object.assign({}, prevData), update);
-                    await tx.message.update({
+                    await tx.waMessage.update({
                         where: {
                             sessionId_remoteJid_id: {
                                 id: key.id,
@@ -86,11 +86,11 @@ function messageHandler(sessionId, event) {
     const del = async (item) => {
         try {
             if ('all' in item) {
-                await prisma.message.deleteMany({ where: { remoteJid: item.jid, sessionId } });
+                await prisma.waMessage.deleteMany({ where: { remoteJid: item.jid, sessionId } });
                 return;
             }
             const jid = item.keys[0].remoteJid;
-            await prisma.message.deleteMany({
+            await prisma.waMessage.deleteMany({
                 where: { id: { in: item.keys.map((k) => k.id) }, remoteJid: jid, sessionId },
             });
         }
@@ -102,7 +102,7 @@ function messageHandler(sessionId, event) {
         for (const { key, receipt } of updates) {
             try {
                 await prisma.$transaction(async (tx) => {
-                    const message = await tx.message.findFirst({
+                    const message = await tx.waMessage.findFirst({
                         select: { userReceipt: true },
                         where: { id: key.id, remoteJid: key.remoteJid, sessionId },
                     });
@@ -117,7 +117,7 @@ function messageHandler(sessionId, event) {
                     else {
                         userReceipt.push(receipt);
                     }
-                    await tx.message.update({
+                    await tx.waMessage.update({
                         select: { pkId: true },
                         data: (0, utils_1.transformPrisma)({ userReceipt: userReceipt }),
                         where: {
@@ -135,7 +135,7 @@ function messageHandler(sessionId, event) {
         for (const { key, reaction } of reactions) {
             try {
                 await prisma.$transaction(async (tx) => {
-                    const message = await tx.message.findFirst({
+                    const message = await tx.waMessage.findFirst({
                         select: { reactions: true },
                         where: { id: key.id, remoteJid: key.remoteJid, sessionId },
                     });
@@ -146,7 +146,7 @@ function messageHandler(sessionId, event) {
                     const reactions = (message.reactions || []).filter((r) => getKeyAuthor(r.key) !== authorID);
                     if (reaction.text)
                         reactions.push(reaction);
-                    await tx.message.update({
+                    await tx.waMessage.update({
                         select: { pkId: true },
                         data: (0, utils_1.transformPrisma)({ reactions: reactions }),
                         where: {

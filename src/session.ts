@@ -7,7 +7,7 @@ import { useLogger, usePrisma } from './shared';
 const fixId = (id: string) => id.replace(/\//g, '__').replace(/:/g, '-').replace(/\./g, '--');
 
 export async function useSession(sessionId: string) {
-  const model = usePrisma().session;
+  const model = usePrisma().waSession;
   const logger = useLogger();
 
   const write = async (data: any, id: string) => {

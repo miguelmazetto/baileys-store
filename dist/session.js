@@ -7,7 +7,7 @@ const runtime_1 = require("@prisma/client/runtime");
 const shared_1 = require("./shared");
 const fixId = (id) => id.replace(/\//g, '__').replace(/:/g, '-').replace(/\./g, '--');
 async function useSession(sessionId) {
-    const model = (0, shared_1.usePrisma)().session;
+    const model = (0, shared_1.usePrisma)().waSession;
     const logger = (0, shared_1.useLogger)();
     const write = async (data, id) => {
         try {

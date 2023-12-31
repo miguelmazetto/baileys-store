@@ -20,9 +20,9 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
   const set: BaileysEventHandler<'messaging-history.set'> = async ({ messages, isLatest }) => {
     try {
       await prisma.$transaction(async (tx) => {
-        if (isLatest) await tx.message.deleteMany({ where: { sessionId } });
+        if (isLatest) await tx.waMessage.deleteMany({ where: { sessionId } });
 
-        await tx.message.createMany({
+        await tx.waMessage.createMany({
           data: messages.map((message) => ({
             ...transformPrisma(message),
             remoteJid: message.key.remoteJid!,
@@ -45,14 +45,14 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
           try {
             const jid = jidNormalizedUser(message.key.remoteJid!);
             const data = transformPrisma(message);
-            await prisma.message.upsert({
+            await prisma.waMessage.upsert({
               select: { pkId: true },
               create: { ...data, remoteJid: jid, id: message.key.id!, sessionId },
               update: { ...data },
               where: { sessionId_remoteJid_id: { remoteJid: jid, id: message.key.id!, sessionId } },
             });
 
-            const chatExists = (await prisma.chat.count({ where: { id: jid, sessionId } })) > 0;
+            const chatExists = (await prisma.waChat.count({ where: { id: jid, sessionId } })) > 0;
             if (type === 'notify' && !chatExists) {
               event.emit('chats.upsert', [
                 {
@@ -74,7 +74,7 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
     for (const { update, key } of updates) {
       try {
         await prisma.$transaction(async (tx) => {
-          const prevData = await tx.message.findFirst({
+          const prevData = await tx.waMessage.findFirst({
             where: { id: key.id!, remoteJid: key.remoteJid!, sessionId },
           });
           if (!prevData) {
@@ -82,7 +82,7 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
           }
 
           const data = { ...prevData, ...update } as proto.IWebMessageInfo;
-          await tx.message.update({
+          await tx.waMessage.update({
             where: {
               sessionId_remoteJid_id: {
                 id: key.id!,
@@ -107,12 +107,12 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
   const del: BaileysEventHandler<'messages.delete'> = async (item) => {
     try {
       if ('all' in item) {
-        await prisma.message.deleteMany({ where: { remoteJid: item.jid, sessionId } });
+        await prisma.waMessage.deleteMany({ where: { remoteJid: item.jid, sessionId } });
         return;
       }
 
       const jid = item.keys[0].remoteJid!;
-      await prisma.message.deleteMany({
+      await prisma.waMessage.deleteMany({
         where: { id: { in: item.keys.map((k) => k.id!) }, remoteJid: jid, sessionId },
       });
     } catch (e) {
@@ -124,7 +124,7 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
     for (const { key, receipt } of updates) {
       try {
         await prisma.$transaction(async (tx) => {
-          const message = await tx.message.findFirst({
+          const message = await tx.waMessage.findFirst({
             select: { userReceipt: true },
             where: { id: key.id!, remoteJid: key.remoteJid!, sessionId },
           });
@@ -141,7 +141,7 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
             userReceipt.push(receipt);
           }
 
-          await tx.message.update({
+          await tx.waMessage.update({
             select: { pkId: true },
             data: transformPrisma({ userReceipt: userReceipt }),
             where: {
@@ -159,7 +159,7 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
     for (const { key, reaction } of reactions) {
       try {
         await prisma.$transaction(async (tx) => {
-          const message = await tx.message.findFirst({
+          const message = await tx.waMessage.findFirst({
             select: { reactions: true },
             where: { id: key.id!, remoteJid: key.remoteJid!, sessionId },
           });
@@ -173,7 +173,7 @@ export default function messageHandler(sessionId: string, event: BaileysEventEmi
           );
 
           if (reaction.text) reactions.push(reaction);
-          await tx.message.update({
+          await tx.waMessage.update({
             select: { pkId: true },
             data: transformPrisma({ reactions: reactions }),
             where: {
